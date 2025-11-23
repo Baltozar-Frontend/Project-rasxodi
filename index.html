@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 MoneyTracker - Учет расходов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stat-card.income { border-left: 5px solid #27ae60; }
+        .stat-card.expense { border-left: 5px solid #e74c3c; }
+        .stat-amount {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .balance {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        .positive { color: #27ae60; }
+        .negative { color: #e74c3c; }
+        .main-content {
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .category-btn {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .category-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .transactions {
+            margin-top: 30px;
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+        .transaction-item:hover {
+            background: #f8f9fa;
+        }
+        .transaction-info {
+            flex: 1;
+        }
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .income-amount { color: #27ae60; }
+        .expense-amount { color: #e74c3c; }
+        .transaction-category {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .export-btn {
+            background: #27ae60;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 MoneyTracker</h1>
+            <p>Бесплатное приложение для учета ваших финансов</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card income">
+                <div>Доходы</div>
+                <div class="stat-amount" id="totalIncome">0 ₽</div>
+                <div>за все время</div>
+            </div>
+            <div class="stat-card expense">
+                <div>Расходы</div>
+                <div class="stat-amount" id="totalExpense">0 ₽</div>
+                <div>за все время</div>
+            </div>
+        </div>
+
+        <div class="balance">
+            <span id="balanceAmount" class="positive">0 ₽</span>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('add')">Добавить операцию</div>
+                <div class="tab" onclick="switchTab('history')">История</div>
+                <div class="tab" onclick="switchTab('analytics')">Аналитика</div>
+            </div>
+
+            <!-- Вкладка добавления операции -->
+            <div id="addTab">
+                <div class="form-group">
+                    <label>Тип операции:</label>
+                    <select id="type" class="form-control">
+                        <option value="income">Доход</option>
+                        <option value="expense">Расход</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Сумма (₽):</label>
+                    <input type="number" id="amount" class="form-control" placeholder="Введите сумму" min="0" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label>Категория:</label>
+                    <div class="categories" id="categories">
+                        <!-- Категории будут добавлены через JavaScript -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Описание:</label>
+                    <input type="text" id="description" class="form-control" placeholder="Краткое описание">
+                </div>
+
+                <div class="form-group">
+                    <label>Дата:</label>
+                    <input type="date" id="date" class="form-control">
+                </div>
+
+                <button class="btn" onclick="addTransaction()">💾 Добавить операцию</button>
+            </div>
+
+            <!-- Вкладка истории -->
+            <div id="historyTab" class="hidden">
+                <div class="form-group">
+                    <input type="text" id="search" class="form-control" placeholder="🔍 Поиск по описанию..." onkeyup="filterTransactions()">
+                </div>
+                <div class="transactions" id="transactionsList">
+                    <!-- Транзакции будут добавлены через JavaScript -->
+                </div>
+                <button class="btn export-btn" onclick="exportData()">📊 Экспорт в Excel</button>
+            </div>
+
+            <!-- Вкладка аналитики -->
+            <div id="analyticsTab" class="hidden">
+                <div class="chart-container">
+                    <h3>📈 Расходы по категориям</h3>
+                    <canvas id="chart" width="400" height="200"></canvas>
+                </div>
+                <div class="form-group">
+                    <label>Период:</label>
+                    <select id="period" class="form-control" onchange="updateChart()">
+                        <option value="week">Неделя</option>
+                        <option value="month" selected>Месяц</option>
+                        <option value="year">Год</option>
+                        <option value="all">Все время</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let selectedCategory = '';
+
+        // Категории расходов и доходов
+        const categories = {
+            income: ['Зарплата', 'Фриланс', 'Инвестиции', 'Подарки', 'Прочее'],
+            expense: ['Еда', 'Транспорт', 'Жилье', 'Развлечения', 'Здоровье', 'Одежда', 'Образование', 'Прочее']
+        };
+
+        // Инициализация приложения
+        function init() {
+            renderCategories();
+            updateStats();
+            renderTransactions();
+            updateChart();
+            document.getElementById('date').valueAsDate = new Date();
+        }
+
+        // Рендер категорий
+        function renderCategories() {
+            const categoriesDiv = document.getElementById('categories');
+            const type = document.getElementById('type').value;
+            
+            categoriesDiv.innerHTML = '';
+            categories[type].forEach(category => {
+                const btn = document.createElement('div');
+                btn.className = 'category-btn';
+                btn.textContent = category;
+                btn.onclick = () => selectCategory(btn, category);
+                categoriesDiv.appendChild(btn);
+            });
+        }
+
+        // Выбор категории
+        function selectCategory(btn, category) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedCategory = category;
+        }
+
+        // Переключение вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => tab.classList.add('hidden'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            if (tabName === 'analytics') {
+                updateChart();
+            }
+        }
+
+        // Добавление транзакции
+        function addTransaction() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const description = document.getElementById('description').value;
+            const type = document.getElementById('type').value;
+            const date = document.getElementById('date').value;
+
+            if (!amount || !selectedCategory || !description) {
+                alert('Пожалуйста, заполните все поля!');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now(),
+                amount: amount,
+                description: description,
+                category: selectedCategory,
+                type: type,
+                date: date,
+                timestamp: new Date().toISOString()
+            };
+
+            transactions.push(transaction);
+            saveTransactions();
+            updateStats();
+            renderTransactions();
+            
+            // Сброс формы
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            selectedCategory = '';
+            
+            alert('Операция успешно добавлена!');
+        }
+
+        // Сохранение в LocalStorage
+        function saveTransactions() {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            const totalIncome = transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalExpense = transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const balance = totalIncome - totalExpense;
+
+            document.getElementById('totalIncome').textContent = formatMoney(totalIncome);
+            document.getElementById('totalExpense').textContent = formatMoney(totalExpense);
+            document.getElementById('balanceAmount').textContent = formatMoney(balance);
+            document.getElementById('balanceAmount').className = balance >= 0 ? 'positive' : 'negative';
+        }
+
+        // Рендер списка транзакций
+        function renderTransactions() {
+            const list = document.getElementById('transactionsList');
+            list.innerHTML = '';
+
+            const sortedTransactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedTransactions.forEach(transaction => {
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                item.innerHTML = `
+                    <div class="transaction-info">
+                        <div>${transaction.description}</div>
+                        <div class="transaction-category">${transaction.category} • ${formatDate(transaction.date)}</div>
+                    </div>
+                    <div class="transaction-amount ${transaction.type}-amount">
+                        ${transaction.type === 'income' ? '+' : '-'}${formatMoney(transaction.amount)}
+                    </div>
+                    <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">🗑️</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Удаление транзакции
+        function deleteTransaction(id) {
+            if (confirm('Удалить эту операцию?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveTransactions();
+                updateStats();
+                renderTransactions();
+                updateChart();
+            }
+        }
+
+        // Фильтрация транзакций
+        function filterTransactions() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const items = document.querySelectorAll('.transaction-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        // Обновление графика
+        function updateChart() {
+            const canvas = document.getElementById('chart');
+            const ctx = canvas.getContext('2d');
+            const period = document.getElementById('period').value;
+            
+            // Очистка canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Фильтрация данных по периоду
+            const filteredTransactions = filterTransactionsByPeriod(period);
+            const expenseByCategory = {};
+            
+            filteredTransactions
+                .filter(t => t.type === 'expense')
+                .forEach(t => {
+                    expenseByCategory[t.category] = (expenseByCategory[t.category] || 0) + t.amount;
+                });
+            
+            // Рисование простого графика
+            const categories = Object.keys(expenseByCategory);
+            const amounts = Object.values(expenseByCategory);
+            const maxAmount = Math.max(...amounts, 1);
+            
+            const barWidth = 40;
+            const spacing = 20;
+            const startX = 50;
+            const startY = canvas.height - 50;
+            const maxBarHeight = 150;
+            
+            // Оси
+            ctx.strokeStyle = '#ccc';
+            ctx.beginPath();
+            ctx.moveTo(30, 20);
+            ctx.lineTo(30, startY);
+            ctx.lineTo(canvas.width - 20, startY);
+            ctx.stroke();
+            
+            // Столбцы
+            categories.forEach((category, index) => {
+                const x = startX + index * (barWidth + spacing);
+                const barHeight = (amounts[index] / maxAmount) * maxBarHeight;
+                const y = startY - barHeight;
+                
+                // Столбец
+                ctx.fillStyle = getCategoryColor(category);
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Подпись категории
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText(category, x, startY + 20);
+                
+                // Сумма
+                ctx.fillText(formatMoney(amounts[index]), x, y - 5);
+            });
+        }
+
+        // Фильтрация по периоду
+        function filterTransactionsByPeriod(period) {
+            const now = new Date();
+            let startDate;
+            
+            switch (period) {
+                case 'week':
+                    startDate = new Date(now.setDate(now.getDate() - 7));
+                    break;
+                case 'month':
+                    startDate = new Date(now.setMonth(now.getMonth() - 1));
+                    break;
+                case 'year':
+                    startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+                    break;
+                default:
+                    return transactions;
+            }
+            
+            return transactions.filter(t => new Date(t.date) >= startDate);
+        }
+
+        // Цвета для категорий
+        function getCategoryColor(category) {
+            const colors = {
+                'Еда': '#e74c3c', 'Транспорт': '#3498db', 'Жилье': '#9b59b6',
+                'Развлечения': '#f39c12', 'Здоровье': '#2ecc71', 'Одежда': '#e67e22',
+                'Образование': '#1abc9c', 'Прочее': '#95a5a6'
+            };
+            return colors[category] || '#95a5a6';
+        }
+
+        // Экспорт данных
+        function exportData() {
+            let csv = 'Дата,Тип,Категория,Описание,Сумма\n';
+            
+            transactions.forEach(t => {
+                csv += `${t.date},${t.type === 'income' ? 'Доход' : 'Расход'},${t.category},${t.description},${t.amount}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'money_tracker_export.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Вспомогательные функции
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('ru-RU', { 
+                style: 'currency', 
+                currency: 'RUB',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('ru-RU');
+        }
+
+        // Слушатели событий
+        document.getElementById('type').addEventListener('change', renderCategories);
+
+        // Запуск приложения
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
