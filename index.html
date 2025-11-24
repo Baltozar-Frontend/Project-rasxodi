@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 CoinFlow - Умный учет финансов</title>
+    <title>💰 CoinFlow - Учет финансов</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -16,296 +16,232 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
             color: #2d3748;
         }
         .app-container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .header {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
-            padding: 40px 30px;
+            padding: 30px 24px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            animation: float 20s linear infinite;
-        }
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(-20px, -20px) rotate(360deg); }
-        }
-        .header-content {
-            position: relative;
-            z-index: 2;
-        }
-        .logo {
-            font-size: 3em;
-            margin-bottom: 10px;
         }
         .app-title {
-            font-size: 2.8em;
+            font-size: 2em;
             font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #fff, #e2e8f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
         .app-subtitle {
-            font-size: 1.2em;
+            font-size: 1em;
             opacity: 0.9;
-            font-weight: 400;
         }
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            padding: 30px;
+            gap: 12px;
+            padding: 20px;
             background: #f8fafc;
         }
         .stat-card {
             background: white;
-            padding: 25px;
-            border-radius: 20px;
+            padding: 20px 16px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        }
-        .stat-card.income::before { background: linear-gradient(135deg, #10b981, #34d399); }
-        .stat-card.expense::before { background: linear-gradient(135deg, #ef4444, #f87171); }
-        .stat-card.balance::before { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+        .stat-card.income { border-top: 4px solid #10b981; }
+        .stat-card.expense { border-top: 4px solid #ef4444; }
+        .stat-card.balance { border-top: 4px solid #3b82f6; }
         .stat-icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
+            font-size: 1.8em;
+            margin-bottom: 8px;
         }
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.8em;
             color: #64748b;
             font-weight: 500;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
         .stat-amount {
-            font-size: 2.2em;
+            font-size: 1.4em;
             font-weight: 700;
-            margin: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .positive { color: #10b981; }
         .negative { color: #ef4444; }
         .main-content {
             display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 0;
-            min-height: 600px;
+            grid-template-columns: 1fr;
+            min-height: 500px;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 320px 1fr;
+            }
         }
         .sidebar {
             background: #f8fafc;
-            padding: 30px;
+            padding: 24px;
             border-right: 1px solid #e2e8f0;
         }
         .content-area {
-            padding: 30px;
+            padding: 24px;
             background: white;
+            min-height: 500px;
         }
         .tabs {
             display: flex;
             background: #f1f5f9;
-            border-radius: 16px;
-            padding: 6px;
-            margin-bottom: 30px;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
         }
         .tab {
             flex: 1;
-            padding: 15px 20px;
+            padding: 12px 16px;
             text-align: center;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
             font-weight: 500;
             color: #64748b;
+            font-size: 0.9em;
         }
         .tab.active {
             background: white;
             color: #4f46e5;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
-        }
-        .tab:hover:not(.active) {
-            color: #4f46e5;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .form-label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #374151;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
         .form-control {
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px 16px;
             border: 2px solid #e5e7eb;
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: white;
-            font-family: 'Inter', sans-serif;
         }
         .form-control:focus {
             outline: none;
             border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-        .form-control::placeholder {
-            color: #9ca3af;
         }
         .btn {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
             border: none;
-            padding: 18px 30px;
-            border-radius: 14px;
+            padding: 16px 24px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        .btn:hover::before {
-            left: 100%;
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
-        }
-        .btn-secondary {
-            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
         }
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 12px 0;
         }
         .category-btn {
-            padding: 14px;
+            padding: 12px 8px;
             border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 10px;
             background: white;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
             font-weight: 500;
-            position: relative;
-            overflow: hidden;
-        }
-        .category-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .category-btn.active::before {
-            opacity: 1;
+            font-size: 0.85em;
         }
         .category-btn.active {
+            background: #4f46e5;
             color: white;
             border-color: #4f46e5;
         }
         .category-btn:hover:not(.active) {
             border-color: #4f46e5;
-            transform: translateY(-2px);
         }
-        .category-text {
-            position: relative;
-            z-index: 2;
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .quick-action {
+            padding: 10px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.8em;
+        }
+        .quick-action:hover {
+            border-color: #4f46e5;
         }
         .transactions-list {
-            max-height: 500px;
+            max-height: 400px;
             overflow-y: auto;
         }
         .transaction-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 16px;
             border-bottom: 1px solid #f1f5f9;
             transition: all 0.3s ease;
-            border-radius: 12px;
-            margin-bottom: 8px;
         }
         .transaction-item:hover {
             background: #f8fafc;
-            transform: translateX(5px);
         }
         .transaction-info {
             flex: 1;
+            min-width: 0;
         }
         .transaction-description {
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .transaction-meta {
-            font-size: 0.85em;
+            font-size: 0.8em;
             color: #6b7280;
         }
         .transaction-amount {
             font-weight: 700;
-            font-size: 1.3em;
-            margin-left: 15px;
+            font-size: 1.1em;
+            margin-left: 12px;
+            white-space: nowrap;
         }
         .income-amount { color: #10b981; }
         .expense-amount { color: #ef4444; }
@@ -314,11 +250,10 @@
             border: none;
             color: #9ca3af;
             cursor: pointer;
-            padding: 8px;
-            margin-left: 10px;
-            border-radius: 8px;
+            padding: 6px;
+            margin-left: 8px;
+            border-radius: 6px;
             transition: all 0.3s ease;
-            font-size: 1.2em;
         }
         .delete-btn:hover {
             color: #ef4444;
@@ -326,125 +261,73 @@
         }
         .analytics-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 16px;
             margin-bottom: 20px;
+        }
+        @media (min-width: 768px) {
+            .analytics-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         .chart-container {
             background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .chart-title {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #6b7280;
         }
         .empty-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
+            font-size: 3em;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
         .search-container {
             position: relative;
-            margin-bottom: 25px;
-        }
-        .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
+            margin-bottom: 20px;
         }
         .search-input {
-            padding-left: 50px !important;
-        }
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-        .quick-action {
-            padding: 12px;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
-        .quick-action:hover {
-            border-color: #4f46e5;
-            transform: translateY(-2px);
+            padding-left: 44px !important;
         }
         .hidden {
-            display: none;
+            display: none !important;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .auto-save-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 500;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        .auto-save-indicator.show {
-            transform: translateY(0);
-            opacity: 1;
+        .active-tab {
+            display: block !important;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
-            <div class="header-content">
-                <div class="logo">💎</div>
-                <h1 class="app-title">CoinFlow</h1>
-                <p class="app-subtitle">Умный учет финансов с автосохранением</p>
-            </div>
+            <h1 class="app-title">CoinFlow</h1>
+            <p class="app-subtitle">Умный учет финансов</p>
         </div>
 
         <div class="dashboard">
             <div class="stat-card income">
                 <div class="stat-icon">📈</div>
-                <div class="stat-label">Общие доходы</div>
+                <div class="stat-label">ДОХОДЫ</div>
                 <div class="stat-amount positive" id="totalIncome">0 ₽</div>
             </div>
             <div class="stat-card expense">
                 <div class="stat-icon">📉</div>
-                <div class="stat-label">Общие расходы</div>
+                <div class="stat-label">РАСХОДЫ</div>
                 <div class="stat-amount negative" id="totalExpense">0 ₽</div>
             </div>
             <div class="stat-card balance">
                 <div class="stat-icon">💰</div>
-                <div class="stat-label">Текущий баланс</div>
+                <div class="stat-label">БАЛАНС</div>
                 <div class="stat-amount positive" id="balanceAmount">0 ₽</div>
             </div>
         </div>
@@ -452,12 +335,12 @@
         <div class="main-content">
             <div class="sidebar">
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab('add')">➕ Добавить</div>
-                    <div class="tab" onclick="switchTab('history')">📋 История</div>
-                    <div class="tab" onclick="switchTab('analytics')">📊 Аналитика</div>
+                    <div class="tab active" data-tab="add">➕ Добавить</div>
+                    <div class="tab" data-tab="history">📋 История</div>
+                    <div class="tab" data-tab="analytics">📊 Аналитика</div>
                 </div>
 
-                <div id="addTab" class="fade-in">
+                <div id="addTab" class="tab-content active-tab">
                     <div class="form-group">
                         <label class="form-label">Тип операции</label>
                         <select id="type" class="form-control">
@@ -468,7 +351,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Сумма (₽)</label>
-                        <input type="number" id="amount" class="form-control" placeholder="0.00" min="0" step="0.01">
+                        <input type="number" id="amount" class="form-control" placeholder="0" min="0" step="1">
                     </div>
 
                     <div class="form-group">
@@ -479,8 +362,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Описание (необязательно)</label>
-                        <input type="text" id="description" class="form-control" placeholder="Например: Зарплата за март">
+                        <label class="form-label">Описание</label>
+                        <input type="text" id="description" class="form-control" placeholder="Например: Зарплата">
                     </div>
 
                     <div class="form-group">
@@ -495,95 +378,78 @@
                     </div>
 
                     <button class="btn" onclick="addTransaction()">
-                        💾 Сохранить операцию
+                        💾 Сохранить
                     </button>
                 </div>
             </div>
 
             <div class="content-area">
-                <div id="historyTab" class="hidden fade-in">
+                <div id="historyTab" class="tab-content hidden">
                     <div class="search-container">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="search" class="form-control search-input" placeholder="Поиск по операциям..." onkeyup="filterTransactions()">
+                        <input type="text" id="search" class="form-control search-input" placeholder="🔍 Поиск операций..." onkeyup="filterTransactions()">
                     </div>
                     <div class="transactions-list" id="transactionsList">
                         <!-- Транзакции будут добавлены через JavaScript -->
                     </div>
                 </div>
 
-                <div id="analyticsTab" class="hidden fade-in">
+                <div id="analyticsTab" class="tab-content hidden">
                     <div class="form-group">
-                        <label class="form-label">Период анализа</label>
+                        <label class="form-label">Период</label>
                         <select id="period" class="form-control" onchange="updateCharts()">
-                            <option value="week">📅 Неделя</option>
-                            <option value="month" selected>📅 Месяц</option>
-                            <option value="year">📅 Год</option>
-                            <option value="all">📅 Все время</option>
+                            <option value="week">Неделя</option>
+                            <option value="month" selected>Месяц</option>
+                            <option value="year">Год</option>
+                            <option value="all">Все время</option>
                         </select>
                     </div>
 
                     <div class="analytics-grid">
                         <div class="chart-container">
                             <div class="chart-title">📊 Расходы по категориям</div>
-                            <canvas id="expensesChart"></canvas>
+                            <canvas id="expensesChart" height="250"></canvas>
                         </div>
                         
                         <div class="chart-container">
                             <div class="chart-title">💰 Доходы по категориям</div>
-                            <canvas id="incomeChart"></canvas>
+                            <canvas id="incomeChart" height="250"></canvas>
                         </div>
                     </div>
 
                     <div class="chart-container">
                         <div class="chart-title">📈 Динамика доходов и расходов</div>
-                        <canvas id="trendChart"></canvas>
+                        <canvas id="trendChart" height="200"></canvas>
                     </div>
-
-                    <button class="btn btn-secondary" onclick="exportData()" style="margin-top: 20px;">
-                        📥 Экспорт данных
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="auto-save-indicator" id="autoSaveIndicator">
-        ✅ Данные сохранены автоматически
-    </div>
-
     <script>
-        // Инициализация данных с автосохранением
+        // Инициализация данных
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         let selectedCategory = '';
-        let autoSaveTimer = null;
-        let charts = {};
 
-        // Категории с эмодзи
+        // Категории
         const categories = {
             income: [
-                { name: '💼 Зарплата', emoji: '💼' },
-                { name: '👨‍💻 Фриланс', emoji: '👨‍💻' },
-                { name: '📈 Инвестиции', emoji: '📈' },
-                { name: '🎁 Подарки', emoji: '🎁' },
-                { name: '🔧 Прочее', emoji: '🔧' }
+                '💼 Зарплата',
+                '👨‍💻 Фриланс', 
+                '📈 Инвестиции',
+                '🎁 Подарки',
+                '🔧 Прочее'
             ],
             expense: [
-                { name: '🍕 Еда', emoji: '🍕' },
-                { name: '🚗 Транспорт', emoji: '🚗' },
-                { name: '🏠 Жилье', emoji: '🏠' },
-                { name: '🎬 Развлечения', emoji: '🎬' },
-                { name: '🏥 Здоровье', emoji: '🏥' },
-                { name: '👕 Одежда', emoji: '👕' },
-                { name: '📚 Образование', emoji: '📚' },
-                { name: '🔧 Прочее', emoji: '🔧' }
+                '🍕 Еда',
+                '🚗 Транспорт',
+                '🏠 Жилье',
+                '🎬 Развлечения',
+                '🏥 Здоровье',
+                '👕 Одежда',
+                '📚 Образование',
+                '🔧 Прочее'
             ]
         };
-
-        // Цвета для графиков
-        const chartColors = [
-            '#4f46e5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
-            '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
-        ];
 
         // Инициализация приложения
         function init() {
@@ -591,260 +457,23 @@
             updateStats();
             renderTransactions();
             initCharts();
+            setupEventListeners();
             document.getElementById('date').valueAsDate = new Date();
-            
-            // Автосохранение полей формы
-            loadFormState();
-            setupAutoSave();
         }
 
-        // Инициализация графиков
-        function initCharts() {
-            const expensesCtx = document.getElementById('expensesChart').getContext('2d');
-            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
-            const trendCtx = document.getElementById('trendChart').getContext('2d');
-
-            // График расходов по категориям (Doughnut)
-            charts.expensesChart = new Chart(expensesCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: chartColors,
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${formatMoney(value)} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // График доходов по категориям (Pie)
-            charts.incomeChart = new Chart(incomeCtx, {
-                type: 'pie',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: chartColors,
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${formatMoney(value)} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // График трендов (Line)
-            charts.trendChart = new Chart(trendCtx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: 'Доходы',
-                            data: [],
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Расходы',
-                            data: [],
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return formatMoney(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            updateCharts();
-        }
-
-        // Обновление всех графиков
-        function updateCharts() {
-            const period = document.getElementById('period').value;
-            const filteredTransactions = filterTransactionsByPeriod(period);
-
-            updateCategoryChart('expense', charts.expensesChart, filteredTransactions);
-            updateCategoryChart('income', charts.incomeChart, filteredTransactions);
-            updateTrendChart(charts.trendChart, filteredTransactions);
-        }
-
-        // Обновление графика по категориям
-        function updateCategoryChart(type, chart, transactions) {
-            const categoryData = {};
-            
-            transactions
-                .filter(t => t.type === type)
-                .forEach(t => {
-                    categoryData[t.category] = (categoryData[t.category] || 0) + t.amount;
+        function setupEventListeners() {
+            // Обработчики вкладок
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
                 });
-
-            const labels = Object.keys(categoryData);
-            const data = Object.values(categoryData);
-
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = data;
-            chart.update();
-        }
-
-        // Обновление графика трендов
-        function updateTrendChart(chart, transactions) {
-            // Группировка по месяцам
-            const monthlyData = {};
-            
-            transactions.forEach(t => {
-                const date = new Date(t.date);
-                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                const monthName = date.toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' });
-                
-                if (!monthlyData[monthKey]) {
-                    monthlyData[monthKey] = {
-                        label: monthName,
-                        income: 0,
-                        expense: 0
-                    };
-                }
-                
-                if (t.type === 'income') {
-                    monthlyData[monthKey].income += t.amount;
-                } else {
-                    monthlyData[monthKey].expense += t.amount;
-                }
             });
 
-            // Сортировка по дате
-            const sortedMonths = Object.keys(monthlyData).sort();
-            const labels = sortedMonths.map(key => monthlyData[key].label);
-            const incomeData = sortedMonths.map(key => monthlyData[key].income);
-            const expenseData = sortedMonths.map(key => monthlyData[key].expense);
-
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = incomeData;
-            chart.data.datasets[1].data = expenseData;
-            chart.update();
-        }
-
-        // Настройка автосохранения
-        function setupAutoSave() {
-            const inputs = ['amount', 'description', 'date', 'type'];
-            inputs.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', debounce(saveFormState, 1000));
-                }
+            // Изменение типа операции
+            document.getElementById('type').addEventListener('change', function() {
+                renderCategories();
             });
-        }
-
-        // Загрузка состояния формы
-        function loadFormState() {
-            const saved = JSON.parse(localStorage.getItem('formState')) || {};
-            if (saved.amount) document.getElementById('amount').value = saved.amount;
-            if (saved.description) document.getElementById('description').value = saved.description;
-            if (saved.date) document.getElementById('date').value = saved.date;
-            if (saved.type) document.getElementById('type').value = saved.type;
-            if (saved.category) {
-                selectedCategory = saved.category;
-                highlightSelectedCategory();
-            }
-        }
-
-        // Сохранение состояния формы
-        function saveFormState() {
-            const formState = {
-                amount: document.getElementById('amount').value,
-                description: document.getElementById('description').value,
-                date: document.getElementById('date').value,
-                type: document.getElementById('type').value,
-                category: selectedCategory
-            };
-            localStorage.setItem('formState', JSON.stringify(formState));
-            showAutoSaveIndicator();
-        }
-
-        // Показать индикатор автосохранения
-        function showAutoSaveIndicator() {
-            const indicator = document.getElementById('autoSaveIndicator');
-            indicator.classList.add('show');
-            setTimeout(() => indicator.classList.remove('show'), 2000);
-        }
-
-        // Debounce для оптимизации
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
         }
 
         function renderCategories() {
@@ -852,51 +481,45 @@
             const type = document.getElementById('type').value;
             
             categoriesDiv.innerHTML = '';
-            categories[type].forEach(cat => {
+            categories[type].forEach(category => {
                 const btn = document.createElement('div');
                 btn.className = 'category-btn';
-                btn.innerHTML = `<span class="category-text">${cat.name}</span>`;
+                if (category === selectedCategory) {
+                    btn.classList.add('active');
+                }
+                btn.textContent = category;
                 btn.onclick = () => {
-                    selectCategory(btn, cat.name);
-                    saveFormState();
+                    selectedCategory = category;
+                    renderCategories();
                 };
                 categoriesDiv.appendChild(btn);
             });
-            highlightSelectedCategory();
-        }
-
-        function highlightSelectedCategory() {
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.querySelector('.category-text').textContent === selectedCategory) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-
-        function selectCategory(btn, category) {
-            selectedCategory = category;
-            highlightSelectedCategory();
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('[id$="Tab"]').forEach(tab => tab.classList.add('hidden'));
-            
-            event.target.classList.add('active');
-            const targetTab = document.getElementById(tabName + 'Tab');
-            targetTab.classList.remove('hidden');
-            targetTab.classList.add('fade-in');
-            
+            // Обновляем активные вкладки
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active-tab');
+            });
+
+            // Активируем выбранную вкладку
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active-tab');
+
+            // Обновляем данные при переключении
             if (tabName === 'analytics') {
-                updateCharts();
+                setTimeout(updateCharts, 100);
+            }
+            if (tabName === 'history') {
+                renderTransactions();
             }
         }
 
         function setQuickAmount(amount) {
             document.getElementById('amount').value = amount;
-            saveFormState();
         }
 
         function addTransaction() {
@@ -916,8 +539,7 @@
                 description: description,
                 category: selectedCategory,
                 type: type,
-                date: date,
-                timestamp: new Date().toISOString()
+                date: date
             };
 
             transactions.push(transaction);
@@ -926,18 +548,13 @@
             renderTransactions();
             updateCharts();
             
-            // Сброс только обязательных полей
+            // Сброс формы
             document.getElementById('amount').value = '';
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('description').value = '';
             selectedCategory = '';
+            renderCategories();
             
-            saveFormState();
-            showNotification('Операция успешно добавлена! 🎉');
-        }
-
-        function showNotification(message) {
-            // Можно добавить красивую нотификацию
-            console.log(message);
+            alert('Операция добавлена! ✅');
         }
 
         function saveTransactions() {
@@ -958,7 +575,7 @@
             document.getElementById('totalIncome').textContent = formatMoney(totalIncome);
             document.getElementById('totalExpense').textContent = formatMoney(totalExpense);
             document.getElementById('balanceAmount').textContent = formatMoney(balance);
-            document.getElementById('balanceAmount').className = balance >= 0 ? 'positive' : 'negative';
+            document.getElementById('balanceAmount').className = balance >= 0 ? 'stat-amount positive' : 'stat-amount negative';
         }
 
         function renderTransactions() {
@@ -968,19 +585,19 @@
                 list.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">💸</div>
-                        <h3>Пока нет операций</h3>
-                        <p>Добавьте первую операцию чтобы начать учет</p>
+                        <h3>Нет операций</h3>
+                        <p>Добавьте первую операцию</p>
                     </div>
                 `;
                 return;
             }
 
             list.innerHTML = '';
-            const sortedTransactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
             sortedTransactions.forEach(transaction => {
                 const item = document.createElement('div');
-                item.className = 'transaction-item fade-in';
+                item.className = 'transaction-item';
                 item.innerHTML = `
                     <div class="transaction-info">
                         <div class="transaction-description">${transaction.description}</div>
@@ -989,20 +606,19 @@
                     <div class="transaction-amount ${transaction.type}-amount">
                         ${transaction.type === 'income' ? '+' : '-'}${formatMoney(transaction.amount)}
                     </div>
-                    <button class="delete-btn" onclick="deleteTransaction(${transaction.id})" title="Удалить">🗑️</button>
+                    <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">🗑️</button>
                 `;
                 list.appendChild(item);
             });
         }
 
         function deleteTransaction(id) {
-            if (confirm('Удалить эту операцию?')) {
+            if (confirm('Удалить операцию?')) {
                 transactions = transactions.filter(t => t.id !== id);
                 saveTransactions();
                 updateStats();
                 renderTransactions();
                 updateCharts();
-                showNotification('Операция удалена 🗑️');
             }
         }
 
@@ -1016,62 +632,111 @@
             });
         }
 
+        // Графики
+        let charts = {};
+
+        function initCharts() {
+            const expensesCtx = document.getElementById('expensesChart').getContext('2d');
+            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+
+            charts.expensesChart = new Chart(expensesCtx, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#4f46e5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'] }] },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            charts.incomeChart = new Chart(incomeCtx, {
+                type: 'pie',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'] }] },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            charts.trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Доходы', data: [], borderColor: '#10b981', tension: 0.4 },
+                        { label: 'Расходы', data: [], borderColor: '#ef4444', tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const period = document.getElementById('period').value;
+            const filteredTransactions = filterTransactionsByPeriod(period);
+
+            updateCategoryChart('expense', charts.expensesChart, filteredTransactions);
+            updateCategoryChart('income', charts.incomeChart, filteredTransactions);
+            updateTrendChart(charts.trendChart, filteredTransactions);
+        }
+
+        function updateCategoryChart(type, chart, transactions) {
+            const categoryData = {};
+            
+            transactions.filter(t => t.type === type).forEach(t => {
+                categoryData[t.category] = (categoryData[t.category] || 0) + t.amount;
+            });
+
+            chart.data.labels = Object.keys(categoryData);
+            chart.data.datasets[0].data = Object.values(categoryData);
+            chart.update();
+        }
+
+        function updateTrendChart(chart, transactions) {
+            const monthlyData = {};
+            
+            transactions.forEach(t => {
+                const date = new Date(t.date);
+                const monthKey = date.toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' });
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { income: 0, expense: 0 };
+                }
+                
+                if (t.type === 'income') {
+                    monthlyData[monthKey].income += t.amount;
+                } else {
+                    monthlyData[monthKey].expense += t.amount;
+                }
+            });
+
+            const labels = Object.keys(monthlyData);
+            const incomeData = labels.map(label => monthlyData[label].income);
+            const expenseData = labels.map(label => monthlyData[label].expense);
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = incomeData;
+            chart.data.datasets[1].data = expenseData;
+            chart.update();
+        }
+
         function filterTransactionsByPeriod(period) {
             const now = new Date();
-            let startDate;
-            
+            let startDate = new Date();
+
             switch (period) {
-                case 'week':
-                    startDate = new Date(now.setDate(now.getDate() - 7));
-                    break;
-                case 'month':
-                    startDate = new Date(now.setMonth(now.getMonth() - 1));
-                    break;
-                case 'year':
-                    startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-                    break;
-                default:
-                    return transactions;
+                case 'week': startDate.setDate(now.getDate() - 7); break;
+                case 'month': startDate.setMonth(now.getMonth() - 1); break;
+                case 'year': startDate.setFullYear(now.getFullYear() - 1); break;
+                case 'all': return transactions;
             }
-            
+
             return transactions.filter(t => new Date(t.date) >= startDate);
         }
 
-        function exportData() {
-            let csv = 'Дата,Тип,Категория,Описание,Сумма\n';
-            
-            transactions.forEach(t => {
-                csv += `${t.date},${t.type === 'income' ? 'Доход' : 'Расход'},${t.category},${t.description},${t.amount}\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `coinflow_export_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
-            showNotification('Данные экспортированы 📥');
-        }
-
         function formatMoney(amount) {
-            return new Intl.NumberFormat('ru-RU', { 
-                style: 'currency', 
-                currency: 'RUB',
-                minimumFractionDigits: 0
-            }).format(amount);
+            return new Intl.NumberFormat('ru-RU').format(amount) + ' ₽';
         }
 
         function formatDate(dateString) {
             return new Date(dateString).toLocaleDateString('ru-RU');
         }
-
-        // Слушатели событий
-        document.getElementById('type').addEventListener('change', function() {
-            renderCategories();
-            saveFormState();
-        });
 
         // Запуск приложения
         document.addEventListener('DOMContentLoaded', init);
