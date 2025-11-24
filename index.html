@@ -42,36 +42,44 @@
             font-size: 1em;
             opacity: 0.9;
         }
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            padding: 20px;
+        
+        /* Слайдер статистики */
+        .stats-slider {
+            position: relative;
             background: #f8fafc;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .stats-container {
+            display: flex;
+            transition: transform 0.3s ease;
         }
         .stat-card {
+            flex: 0 0 100%;
             background: white;
-            padding: 20px 16px;
+            padding: 25px 20px;
             border-radius: 16px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
+            margin: 0 10px;
         }
         .stat-card.income { border-top: 4px solid #10b981; }
         .stat-card.expense { border-top: 4px solid #ef4444; }
         .stat-card.balance { border-top: 4px solid #3b82f6; }
         .stat-icon {
-            font-size: 1.8em;
-            margin-bottom: 8px;
+            font-size: 2.5em;
+            margin-bottom: 12px;
         }
         .stat-label {
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: #64748b;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
         }
         .stat-amount {
-            font-size: 1.4em;
+            font-size: 2em;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
@@ -79,6 +87,56 @@
         }
         .positive { color: #10b981; }
         .negative { color: #ef4444; }
+        
+        /* Навигация слайдера */
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 8px;
+        }
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .slider-dot.active {
+            background: #4f46e5;
+            transform: scale(1.2);
+        }
+        .slider-arrows {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .slider-arrow {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+        .slider-arrow:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr;
@@ -314,21 +372,35 @@
             <p class="app-subtitle">Умный учет финансов</p>
         </div>
 
-        <div class="dashboard">
-            <div class="stat-card income">
-                <div class="stat-icon">📈</div>
-                <div class="stat-label">ДОХОДЫ</div>
-                <div class="stat-amount positive" id="totalIncome">0 ₽</div>
+        <!-- Слайдер статистики -->
+        <div class="stats-slider">
+            <div class="slider-arrows">
+                <button class="slider-arrow" onclick="prevSlide()">❮</button>
+                <button class="slider-arrow" onclick="nextSlide()">❯</button>
             </div>
-            <div class="stat-card expense">
-                <div class="stat-icon">📉</div>
-                <div class="stat-label">РАСХОДЫ</div>
-                <div class="stat-amount negative" id="totalExpense">0 ₽</div>
+            
+            <div class="stats-container" id="statsContainer">
+                <div class="stat-card income">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-label">ОБЩИЕ ДОХОДЫ</div>
+                    <div class="stat-amount positive" id="totalIncome">0 ₽</div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-label">ОБЩИЕ РАСХОДЫ</div>
+                    <div class="stat-amount negative" id="totalExpense">0 ₽</div>
+                </div>
+                <div class="stat-card balance">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-label">ТЕКУЩИЙ БАЛАНС</div>
+                    <div class="stat-amount positive" id="balanceAmount">0 ₽</div>
+                </div>
             </div>
-            <div class="stat-card balance">
-                <div class="stat-icon">💰</div>
-                <div class="stat-label">БАЛАНС</div>
-                <div class="stat-amount positive" id="balanceAmount">0 ₽</div>
+
+            <div class="slider-nav">
+                <div class="slider-dot active" data-slide="0"></div>
+                <div class="slider-dot" data-slide="1"></div>
+                <div class="slider-dot" data-slide="2"></div>
             </div>
         </div>
 
@@ -429,6 +501,7 @@
         // Инициализация данных
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         let selectedCategory = '';
+        let currentSlide = 0;
 
         // Категории
         const categories = {
@@ -459,6 +532,7 @@
             initCharts();
             setupEventListeners();
             document.getElementById('date').valueAsDate = new Date();
+            updateSlider();
         }
 
         function setupEventListeners() {
@@ -473,6 +547,63 @@
             // Изменение типа операции
             document.getElementById('type').addEventListener('change', function() {
                 renderCategories();
+            });
+
+            // Обработчики для точек слайдера
+            document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+            });
+
+            // Swipe для мобильных устройств
+            let startX = 0;
+            const statsContainer = document.getElementById('statsContainer');
+            
+            statsContainer.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            });
+
+            statsContainer.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+                
+                if (Math.abs(diff) > 50) { // минимальное расстояние для свайпа
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            });
+        }
+
+        // Функции слайдера
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % 3;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + 3) % 3;
+            updateSlider();
+        }
+
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            const container = document.getElementById('statsContainer');
+            const dots = document.querySelectorAll('.slider-dot');
+            
+            // Перемещаем слайдер
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Обновляем активную точку
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
             });
         }
 
@@ -539,7 +670,8 @@
                 description: description,
                 category: selectedCategory,
                 type: type,
-                date: date
+                date: date,
+                timestamp: new Date().toISOString()
             };
 
             transactions.push(transaction);
@@ -598,6 +730,7 @@
             sortedTransactions.forEach(transaction => {
                 const item = document.createElement('div');
                 item.className = 'transaction-item';
+                
                 item.innerHTML = `
                     <div class="transaction-info">
                         <div class="transaction-description">${transaction.description}</div>
